@@ -8,6 +8,7 @@ export const renderer: Renderer = ({ story, action, isPaused, config, messageHan
     const [loaded, setLoaded] = React.useState(false);
     const [muted, setMuted] = React.useState(false);
     const { width, height, loader, storyStyles } = config;
+    const [durationMultiplier, setDuartionMultiplier] = React.useState(1)
 
     let computedStyles = {
         ...styles.storyContent,
@@ -26,6 +27,22 @@ export const renderer: Renderer = ({ story, action, isPaused, config, messageHan
         }
     }, [isPaused]);
 
+    React.useEffect(() => {
+        const getFPS = () =>
+        new Promise(resolve =>
+          requestAnimationFrame(t1 =>
+            requestAnimationFrame(t2 => resolve(1000 / (t2 - t1)))
+          )
+        )
+        getFPS().then((fps) => {
+            let f = Math.max(parseFloat(`${fps}`), 60) 
+            console.log(`Screen is running at ${fps} Hz approximated to ${f} Hz`)
+            let m = Math.round(f / 60)
+            setDuartionMultiplier(m)
+            console.log(`Story duration multiplier will be ${m}`)
+          });
+    })
+
     const onWaiting = () => {
         action("pause", true);
     }
@@ -35,7 +52,7 @@ export const renderer: Renderer = ({ story, action, isPaused, config, messageHan
     }
 
     const videoLoaded = () => {
-        messageHandler('UPDATE_VIDEO_DURATION', { duration: vid.current.duration });
+        messageHandler('UPDATE_VIDEO_DURATION', { duration: vid.current.duration * durationMultiplier });
         setLoaded(true);
         vid.current.play().then(() => {
             action('play');
