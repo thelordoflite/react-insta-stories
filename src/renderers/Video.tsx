@@ -36,10 +36,8 @@ export const renderer: Renderer = ({ story, action, isPaused, config, messageHan
         )
         getFPS().then((fps) => {
             let f = Math.max(parseFloat(`${fps}`), 60) 
-            console.log(`Screen is running at ${fps} Hz approximated to ${f} Hz`)
             let m = Math.round(f / 60)
             setDuartionMultiplier(m)
-            console.log(`Story duration multiplier will be ${m}`)
           });
     })
 
@@ -52,7 +50,7 @@ export const renderer: Renderer = ({ story, action, isPaused, config, messageHan
     }
 
     const videoLoaded = () => {
-        messageHandler('UPDATE_VIDEO_DURATION', { duration: vid.current.duration * durationMultiplier });
+        messageHandler('UPDATE_VIDEO_DURATION', { duration: vid.current.duration * durationMultiplier + 1 });
         setLoaded(true);
         vid.current.play().then(() => {
             action('play');
